@@ -800,8 +800,23 @@ const Dashboard = ({ showAuth, setShowAuth }) => {
       return (
         <div className="text-center py-8">
           <div className="text-gray-500 mb-4">
-            {activeTab === 'my-channels' ? 'No channels found. Create your first channel!' : 'No channels available'}
+            {activeTab === 'my-channels' ? 'No channels found. Create your first channel!' : 'No channels available yet'}
           </div>
+          {!isAuthenticated && (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-4">
+              <h3 className="text-lg font-semibold text-blue-800 mb-2">Welcome to Live Streaming Platform!</h3>
+              <p className="text-blue-600 mb-4">
+                Join our community to create and share your own live streaming channels. 
+                You can browse existing channels without an account, but you'll need to login to add your own content.
+              </p>
+              <button
+                onClick={() => setShowAuth(true)}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+              >
+                Get Started - Login/Register
+              </button>
+            </div>
+          )}
           {activeTab === 'channels' && (
             <button
               onClick={handleAddChannel}
