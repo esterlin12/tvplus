@@ -935,10 +935,9 @@ function App() {
 
   return (
     <div className="App">
-      {showAuth ? (
+      <Dashboard showAuth={showAuth} setShowAuth={setShowAuth} />
+      {showAuth && (
         <LoginForm onClose={() => setShowAuth(false)} />
-      ) : (
-        <Dashboard showAuth={showAuth} setShowAuth={setShowAuth} />
       )}
     </div>
   );
