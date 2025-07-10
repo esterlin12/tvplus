@@ -249,11 +249,11 @@ metadata:
 
 test_plan:
   current_focus:
-    - "User Authentication System"
-    - "Channel Management CRUD"
-    - "Super User M3U8 Downloads"
-    - "Channel Search and Filtering"
-    - "Admin Panel Features"
+    - "Authentication UI"
+    - "Channel Browsing Interface"
+    - "Channel Management Interface"
+    - "Video Player Interface"
+    - "Super User Features UI"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
