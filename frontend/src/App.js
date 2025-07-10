@@ -670,7 +670,8 @@ const downloadM3U8 = async (channelId) => {
   }
 };
 
-const Dashboard = () => {
+const Dashboard = ({ showAuth, setShowAuth }) => {
+  const { isAuthenticated, user } = useAuth();
   const [activeTab, setActiveTab] = useState('channels');
   const [channels, setChannels] = useState([]);
   const [myChannels, setMyChannels] = useState([]);
@@ -700,6 +701,7 @@ const Dashboard = () => {
   };
 
   const fetchMyChannels = async () => {
+    if (!isAuthenticated) return;
     setLoading(true);
     try {
       const response = await axios.get(`${API}/my-channels`);
@@ -727,10 +729,17 @@ const Dashboard = () => {
   useEffect(() => {
     if (activeTab === 'channels') {
       fetchChannels();
-    } else if (activeTab === 'my-channels') {
+    } else if (activeTab === 'my-channels' && isAuthenticated) {
       fetchMyChannels();
     }
-  }, [activeTab, searchTerm, selectedCategory]);
+  }, [activeTab, searchTerm, selectedCategory, isAuthenticated]);
+
+  // Redirect to channels tab if user is not authenticated and tries to access protected tabs
+  useEffect(() => {
+    if (!isAuthenticated && ['my-channels', 'add-channel', 'admin'].includes(activeTab)) {
+      setActiveTab('channels');
+    }
+  }, [isAuthenticated, activeTab]);
 
   const handlePlay = (channel) => {
     setSelectedChannel(channel);
@@ -738,11 +747,19 @@ const Dashboard = () => {
   };
 
   const handleEdit = (channel) => {
+    if (!isAuthenticated) {
+      setShowAuth(true);
+      return;
+    }
     setEditingChannel(channel);
     setShowForm(true);
   };
 
   const handleDelete = async (channel) => {
+    if (!isAuthenticated) {
+      setShowAuth(true);
+      return;
+    }
     if (window.confirm('Are you sure you want to delete this channel?')) {
       try {
         await axios.delete(`${API}/channels/${channel.id}`);
@@ -763,9 +780,17 @@ const Dashboard = () => {
     }
   };
 
+  const handleAddChannel = () => {
+    if (!isAuthenticated) {
+      setShowAuth(true);
+      return;
+    }
+    setActiveTab('add-channel');
+  };
+
   const renderChannels = () => {
     const channelsToShow = activeTab === 'my-channels' ? myChannels : channels;
-    const showActions = activeTab === 'my-channels';
+    const showActions = activeTab === 'my-channels' && isAuthenticated;
 
     if (loading) {
       return <div className="text-center py-8">Loading channels...</div>;
@@ -773,8 +798,18 @@ const Dashboard = () => {
 
     if (channelsToShow.length === 0) {
       return (
-        <div className="text-center py-8 text-gray-500">
-          {activeTab === 'my-channels' ? 'No channels found. Create your first channel!' : 'No channels available'}
+        <div className="text-center py-8">
+          <div className="text-gray-500 mb-4">
+            {activeTab === 'my-channels' ? 'No channels found. Create your first channel!' : 'No channels available'}
+          </div>
+          {activeTab === 'channels' && (
+            <button
+              onClick={handleAddChannel}
+              className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-all duration-200 transform hover:scale-105"
+            >
+              {isAuthenticated ? 'Add First Channel' : 'Login to Add Channel'}
+            </button>
+          )}
         </div>
       );
     }
@@ -797,12 +832,16 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
+      <Header 
+        activeTab={activeTab} 
+        setActiveTab={setActiveTab} 
+        setShowAuth={setShowAuth}
+      />
       
       <main className="container mx-auto px-4 py-8">
         {activeTab === 'channels' && (
           <div className="mb-8">
-            <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex flex-col md:flex-row gap-4 mb-6">
               <div className="flex-1">
                 <input
                   type="text"
@@ -826,11 +865,17 @@ const Dashboard = () => {
                   ))}
                 </select>
               </div>
+              <button
+                onClick={handleAddChannel}
+                className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-all duration-200 transform hover:scale-105"
+              >
+                {isAuthenticated ? 'Add Channel' : 'Login to Add'}
+              </button>
             </div>
           </div>
         )}
 
-        {activeTab === 'add-channel' ? (
+        {activeTab === 'add-channel' && isAuthenticated ? (
           <ChannelForm
             onSave={handleSave}
             onCancel={() => setActiveTab('my-channels')}
