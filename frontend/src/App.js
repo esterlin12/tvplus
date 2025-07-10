@@ -840,6 +840,7 @@ const Dashboard = () => {
 
 function App() {
   const { isAuthenticated, loading } = useAuth();
+  const [showAuth, setShowAuth] = useState(false);
 
   if (loading) {
     return (
@@ -854,7 +855,11 @@ function App() {
 
   return (
     <div className="App">
-      {isAuthenticated ? <Dashboard /> : <LoginForm />}
+      {showAuth ? (
+        <LoginForm onClose={() => setShowAuth(false)} />
+      ) : (
+        <Dashboard showAuth={showAuth} setShowAuth={setShowAuth} />
+      )}
     </div>
   );
 }
