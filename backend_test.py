@@ -112,16 +112,17 @@ def make_request(method, endpoint, data=None, headers=None, auth_token=None):
     
     try:
         if method.upper() == "GET":
-            response = requests.get(url, headers=request_headers, params=data)
+            response = requests.get(url, headers=request_headers, params=data, timeout=30)
         elif method.upper() == "POST":
-            response = requests.post(url, headers=request_headers, json=data)
+            response = requests.post(url, headers=request_headers, json=data, timeout=30)
         elif method.upper() == "PUT":
-            response = requests.put(url, headers=request_headers, json=data)
+            response = requests.put(url, headers=request_headers, json=data, timeout=30)
         elif method.upper() == "DELETE":
-            response = requests.delete(url, headers=request_headers)
+            response = requests.delete(url, headers=request_headers, timeout=30)
         else:
             raise ValueError(f"Unsupported method: {method}")
             
+        print(f"DEBUG: {method} {endpoint} -> {response.status_code}")
         return response
     except requests.exceptions.RequestException as e:
         print(f"Request failed: {e}")
