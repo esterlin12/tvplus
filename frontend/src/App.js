@@ -90,9 +90,8 @@ const useAuth = () => {
 };
 
 // Components
-const Header = () => {
+const Header = ({ activeTab, setActiveTab, setShowAuth }) => {
   const { user, logout, isAuthenticated } = useAuth();
-  const [activeTab, setActiveTab] = useState('channels');
 
   return (
     <header className="bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg">
@@ -116,58 +115,68 @@ const Header = () => {
               </button>
             </div>
           ) : (
-            <div className="text-sm">Please login to access features</div>
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={() => setShowAuth(true)}
+                className="bg-white text-purple-600 hover:bg-gray-100 px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
+              >
+                Login / Register
+              </button>
+            </div>
           )}
         </div>
         
-        {isAuthenticated && (
-          <nav className="mt-4">
-            <div className="flex space-x-6">
-              <button
-                onClick={() => setActiveTab('channels')}
-                className={`px-4 py-2 rounded-lg transition-colors ${
-                  activeTab === 'channels' 
-                    ? 'bg-white text-purple-600 font-semibold' 
-                    : 'text-white hover:bg-white/20'
-                }`}
-              >
-                Browse Channels
-              </button>
-              <button
-                onClick={() => setActiveTab('my-channels')}
-                className={`px-4 py-2 rounded-lg transition-colors ${
-                  activeTab === 'my-channels' 
-                    ? 'bg-white text-purple-600 font-semibold' 
-                    : 'text-white hover:bg-white/20'
-                }`}
-              >
-                My Channels
-              </button>
-              <button
-                onClick={() => setActiveTab('add-channel')}
-                className={`px-4 py-2 rounded-lg transition-colors ${
-                  activeTab === 'add-channel' 
-                    ? 'bg-white text-purple-600 font-semibold' 
-                    : 'text-white hover:bg-white/20'
-                }`}
-              >
-                Add Channel
-              </button>
-              {user.is_super_user && (
+        <nav className="mt-4">
+          <div className="flex space-x-6">
+            <button
+              onClick={() => setActiveTab('channels')}
+              className={`px-4 py-2 rounded-lg transition-colors ${
+                activeTab === 'channels' 
+                  ? 'bg-white text-purple-600 font-semibold' 
+                  : 'text-white hover:bg-white/20'
+              }`}
+            >
+              Browse Channels
+            </button>
+            
+            {isAuthenticated && (
+              <>
                 <button
-                  onClick={() => setActiveTab('admin')}
+                  onClick={() => setActiveTab('my-channels')}
                   className={`px-4 py-2 rounded-lg transition-colors ${
-                    activeTab === 'admin' 
+                    activeTab === 'my-channels' 
                       ? 'bg-white text-purple-600 font-semibold' 
                       : 'text-white hover:bg-white/20'
                   }`}
                 >
-                  Admin Panel
+                  My Channels
                 </button>
-              )}
-            </div>
-          </nav>
-        )}
+                <button
+                  onClick={() => setActiveTab('add-channel')}
+                  className={`px-4 py-2 rounded-lg transition-colors ${
+                    activeTab === 'add-channel' 
+                      ? 'bg-white text-purple-600 font-semibold' 
+                      : 'text-white hover:bg-white/20'
+                  }`}
+                >
+                  Add Channel
+                </button>
+                {user.is_super_user && (
+                  <button
+                    onClick={() => setActiveTab('admin')}
+                    className={`px-4 py-2 rounded-lg transition-colors ${
+                      activeTab === 'admin' 
+                        ? 'bg-white text-purple-600 font-semibold' 
+                        : 'text-white hover:bg-white/20'
+                    }`}
+                  >
+                    Admin Panel
+                  </button>
+                )}
+              </>
+            )}
+          </div>
+        </nav>
       </div>
     </header>
   );
